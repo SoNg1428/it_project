@@ -1,17 +1,92 @@
-## Django进阶学习
-
-基于`python3.8`和`Django4.1.3`的博客。   
-[视频地址](https://www.bilibili.com/video/BV1kL411y7AK/)
-
-###  学习内容
-
-####  day 0 2023/03/12
-
-- [x] 本次内容介绍，项目启动：`python .\manage.py runserver`
+# Social media
 
 
-####  day 1 2023/03/20
 
-- [x] 数据库变更为PostgreSQL， 本次操作以windows为例，linux大部分一致，小部分差异自行查阅资料解决。后续开发差不多也会切换到linux上去。
+## Overview
 
-tips:更换数据库引擎，一定要把对应的数据库启动起来。程序才能正常运行。
+The project implemented a social media system, a social media platform designed to enable users to create, share and interact with various types of content such as posts, images and videos. Key features include user-generated posts, friend networks, comments and likes.
+
+The system uses Django as the back-end and Bootstrap as the front-end.
+
+## Project Setup
+
+### Prerequisites
+
+Social media system uses a number of open source projects to work properly:
+
+- [Python 3.8+] Python environment
+- [Django] Python based web framework
+- [Bootstrap] JavaScript based web framework
+- [MySQL] Database
+- [Redis] In-memory data store
+- [GitLab] Open-source Git-based DevOps platform
+
+### Installation
+
+1. Install Dependencies:
+```
+pip install -r requirements.txt
+```
+
+2. Configure the Database:
+
+Create a MySQL database [socialmedia] and configure the database connection in settings.py:
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'socialmedia',
+        'USER': 'your_db_username',
+        'PASSWORD': 'your_db_password',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
+```
+
+3. Configure the Redis:
+
+Make sure you download the Redis and configure the database connection in settings.py:
+```
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+            # "PASSWORD": ,
+            "DECODE_RESPONSES": True
+        }
+    },
+}
+```
+
+4. Run Migrations:
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
+5. Run the Development Server:
+```
+python manage.py runserver
+```
+
+
+## Usage Guide
+
+### User Functions
+
+- **User Registration and Login：** Users can create an account, login and logout. If a user forgets password, can set a new one via email.
+- **Personal Page:** Users can edit and update their personal information.
+- **User Homepage:** Users can post, view, like and comment.
+- **Friends System:** Users can search and follow users.
+
+
+## Development Guidelines
+
+### Collaboration and Communication
+
+- **Version Control:** All code is committed to the GitHub repository.
+- **Team Communication:** Use Microsoft Teams for discussions.
