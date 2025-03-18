@@ -1,0 +1,342 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'favicon.png' %}" rel="icon" type="image/png">
+    <title>Social Book - Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .dropdown-menu {
+            transition: opacity 0.2s ease-in-out;
+        }
+        .dropdown-menu.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .dropdown-menu.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-pink-50 via-white to-red-50 min-h-screen">
+    <header class="bg-white/90 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
+                        Social Book
+                    </a>
+                    <form action="/search" method="POST" class="relative">
+                        {% csrf_token %}
+                        <div class="relative">
+                            <input type="text" name="username" placeholder="Search for username..." 
+                                class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white/50 backdrop-blur-sm">
+                            <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-500 transition-colors">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showUploadModal()" class="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2">
+                        <i class="fa fa-plus"></i>
+                        <span>New Post</span>
+                    </button>
+                    <div class="relative">
+                        <button onclick="toggleDropdown()" class="focus:outline-none">
+                            <img src="{{user_profile.profileimg.url}}" class="w-10 h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-pink-500 transition-all" alt="">
+                        </button>
+                        <div id="userDropdown" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hide">
+                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-pink-50 hover:text-pink-500">Account Settings</a>
+                            <a href="/logout" class="block px-4 py-2 text-gray-800 hover:bg-pink-50 hover:text-pink-500">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 上传模态框 -->
+    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900">Create New Post</h3>
+                <button onclick="hideUploadModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <textarea name="caption" placeholder="What's on your mind?" 
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"></textarea>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <label class="cursor-pointer text-gray-500 hover:text-pink-500 transition-colors">
+                            <i class="fa fa-image text-xl"></i>
+                            <input type="file" name="image_upload" class="hidden" accept="image/*">
+                        </label>
+                        <label class="cursor-pointer text-gray-500 hover:text-pink-500 transition-colors">
+                            <i class="fa fa-video-camera text-xl"></i>
+                            <input type="file" name="video_upload" class="hidden" accept="video/*">
+                        </label>
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                        Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧边栏 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <img src="{{user_profile.profileimg.url}}" class="w-16 h-16 rounded-full object-cover" alt="">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">{{user.username}}</h3>
+                            {% if user_profile.location %}
+                            <p class="text-sm text-gray-500 flex items-center">
+                                <i class="fa fa-map-marker mr-1"></i>
+                                {{user_profile.location}}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <a href="/profile/{{user.username}}" class="block w-full px-4 py-2 text-center bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                            View Profile
+                        </a>
+                        <a href="/settings" class="block w-full px-4 py-2 text-center border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Suggested Users</h3>
+                    <div class="space-y-4">
+                        {% for users in suggestions_username_profile_list %}
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <img src="{{users.profileimg.url}}" class="w-10 h-10 rounded-full object-cover" alt="">
+                                <div>
+                                    <a href="/profile/{{users.user}}" class="text-sm font-medium text-gray-900 hover:text-pink-500 transition-colors">@{{users.user}}</a>
+                                    {% if users.location %}
+                                    <p class="text-xs text-gray-500">{{users.location}}</p>
+                                    {% endif %}
+                                    {% if users.bio %}
+                                    <p class="text-xs text-gray-600">{{users.bio}}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <a href="/profile/{{users.user}}" class="text-sm text-pink-500 hover:text-pink-600 transition-colors">Follow</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间内容区 -->
+            <div class="lg:col-span-2">
+                {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
+                        <p>{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if post_list %}
+                <div class="space-y-6">
+                    {% for post in post_list %}
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <!-- 帖子头部 -->
+                        <div class="p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <a href="/profile/{{post.user}}" class="flex items-center space-x-3">
+                                    <img src="{{post.user_profile.profileimg.url}}" class="w-10 h-10 rounded-full object-cover" alt="">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">{{post.user}}</h3>
+                                        <p class="text-sm text-gray-500">{{post.created_at|timesince}} ago</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 帖子内容 -->
+                        <div class="relative">
+                            {% if post.image and post.image.url %}
+                            <img src="{{ post.image.url }}" alt="Post" class="w-full object-cover">
+                            {% endif %}
+                            <div class="p-4">
+                                <p class="text-gray-900">{{post.caption}}</p>
+                                <div class="mt-4 flex items-center space-x-4">
+                                    <a href="/like-post?post_id={{post.id}}" class="flex items-center space-x-1 text-gray-500 hover:text-pink-500 transition-colors">
+                                        <i class="fa fa-heart"></i>
+                                        <span>{{post.no_of_likes}}</span>
+                                    </a>
+                                    <button onclick="toggleComments('comments-{{post.id}}')" class="flex items-center space-x-1 text-gray-500 hover:text-pink-500 transition-colors">
+                                        <i class="fa fa-comment"></i>
+                                        <span>{{post.comment_count}}</span>
+                                    </button>
+                                    {% if post.image and post.image.url %}
+                                    <a href="{{post.image.url}}" download class="flex items-center space-x-1 text-gray-500 hover:text-pink-500 transition-colors">
+                                        <i class="fa fa-download"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- 评论区域 -->
+                                <div id="comments-{{post.id}}" class="mt-4 pt-4 border-t border-gray-100 hidden">
+                                    <!-- 评论表单 -->
+                                    <form action="/add-comment" method="POST" class="mb-4">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="post_id" value="{{post.id}}">
+                                        <div class="flex space-x-2">
+                                            <img src="{{user_profile.profileimg.url}}" class="w-8 h-8 rounded-full object-cover" alt="">
+                                            <div class="flex-1">
+                                                <input type="text" name="comment_text" placeholder="添加评论..." 
+                                                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                            </div>
+                                            <button type="submit" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                                                发表
+                                            </button>
+                                        </div>
+                                    </form>
+                                    
+                                    <!-- 评论列表 -->
+                                    <div class="space-y-3">
+                                        {% for comment in post.comments %}
+                                        <div class="flex space-x-3">
+                                            <a href="/profile/{{comment.username}}">
+                                                <img src="{{ comment.user_profile.profileimg.url }}" class="w-8 h-8 rounded-full object-cover" alt="">
+                                            </a>
+                                            <div class="flex-1 bg-gray-50 rounded-lg p-3">
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <a href="/profile/{{comment.username}}" class="font-medium text-gray-900 hover:text-pink-500 transition-colors">
+                                                        {{comment.username}}
+                                                    </a>
+                                                    <span class="text-xs text-gray-500">{{comment.created_at|timesince}} ago</span>
+                                                </div>
+                                                <p class="text-gray-800">{{comment.comment}}</p>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="text-center text-gray-500 py-2">
+                                            暂无评论
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-12">
+                    <div class="bg-white rounded-xl shadow-sm p-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-lg font-medium text-gray-900">No posts yet</h3>
+                        <p class="mt-1 text-sm text-gray-500">Follow some users to see their posts!</p>
+                        <div class="mt-6">
+                            <a href="/search" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+                                Find users to follow
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+    </style>
+
+    <script>
+        // 下拉菜单控制
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+            dropdown.classList.toggle('hide');
+        }
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const profileButton = event.target.closest('button');
+            
+            if (!profileButton && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                dropdown.classList.add('hide');
+            }
+        });
+
+        // 上传模态框控制
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+            document.getElementById('uploadModal').classList.add('flex');
+        }
+
+        function hideUploadModal() {
+            document.getElementById('uploadModal').classList.remove('flex');
+            document.getElementById('uploadModal').classList.add('hidden');
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('uploadModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideUploadModal();
+            }
+        });
+
+        // 评论区域控制
+        function toggleComments(commentSectionId) {
+            const commentsSection = document.getElementById(commentSectionId);
+            commentsSection.classList.toggle('hidden');
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script src="{% static 'assets/js/tippy.all.min.js' %}"></script>  
+    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/uikit.js' %}"></script>
+    <script src="{% static 'assets/js/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>
+</body>
+
+
+</html>

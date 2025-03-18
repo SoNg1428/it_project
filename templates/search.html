@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'favicon.png' %}" rel="icon" type="image/png">
+    <title>Social Book - Search</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body class="bg-gradient-to-br from-pink-50 via-white to-red-50 min-h-screen">
+    <header class="bg-white/90 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
+                        Social Book
+                    </a>
+                    <form action="/search" method="POST" class="relative">
+                        {% csrf_token %}
+                        <div class="relative">
+                            <input type="text" name="username" placeholder="Search for username..." 
+                                class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white/50 backdrop-blur-sm">
+                            <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-500 transition-colors">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2">
+                        <i class="fa fa-plus"></i>
+                        <span>New Post</span>
+                    </a>
+                    <div class="relative group">
+                        <img src="{{user_profile.profileimg.url}}" class="w-10 h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-pink-500 transition-all" alt="">
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block">
+                            <a href="/settings" class="block px-4 py-2 text-gray-800 hover:bg-pink-50 hover:text-pink-500">Account Settings</a>
+                            <a href="/logout" class="block px-4 py-2 text-gray-800 hover:bg-pink-50 hover:text-pink-500">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Search Results</h2>
+                <p class="text-gray-500">Results for <span class="font-semibold text-pink-500">@{{username}}</span></p>
+            </div>
+
+            <div class="space-y-4">
+                {% for users in username_profile_list %}
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center space-x-4">
+                        <a href="/profile/{{users.user}}" class="relative group">
+                            <img src="{{users.profileimg.url}}" class="w-16 h-16 rounded-full object-cover hover:ring-2 hover:ring-pink-500 transition-all" alt="">
+                            <div class="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="fa fa-user text-white text-xl"></i>
+                            </div>
+                        </a>
+                        <div>
+                            <a href="/profile/{{users.user}}" class="text-lg font-semibold text-gray-900 hover:text-pink-500 transition-colors">@{{users.user}}</a>
+                            {% if users.location %}
+                            <p class="text-sm text-gray-500 flex items-center">
+                                <i class="fa fa-map-marker mr-1"></i>
+                                {{users.location}}
+                            </p>
+                            {% endif %}
+                            {% if users.bio %}
+                            <p class="text-sm text-gray-600 mt-1">{{users.bio}}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="/profile/{{users.user}}" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                        View Profile
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="{% static 'assets/js/tippy.all.min.js' %}"></script>  
+    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/uikit.js' %}"></script>
+    <script src="{% static 'assets/js/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+    <script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>
+</body>
+
+
+</html>
