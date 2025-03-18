@@ -81,7 +81,7 @@ python manage.py runserver
 - **User Registration and Login：** Users can create an account, login and logout. If a user forgets password, can set a new one via email.
 - **Personal Page:** Users can edit and update their personal information.
 - **User Homepage:** Users can post, view, like and comment.
-- **Friends System:** Users can search and follow users.
+- **Friends System:** Users can search and follow other users.
 
 
 ## Development Guidelines
