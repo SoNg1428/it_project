@@ -6,52 +6,53 @@ from datetime import datetime
 User = get_user_model()
 
 
+# User profile
 class Profile(models.Model):
-    # 当前操作的用户
+    # The user of the current operation
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     id_user = models.IntegerField()
-    # 个人介绍
+    # personal profile
     bio = models.TextField(blank=True)
-    # 头像
+    # avatar
     profileimg = models.ImageField(upload_to='profile_images', default='blank-profile-picture.png')
-    # 地域
+    # geography
     location = models.CharField(max_length=100, blank=True)
 
 
-# 博文，帖子
+# Posts
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    # 用户名
+    # user name
     user = models.CharField(max_length=100)
-    # 发的帖子图片
+    # Posting terkait untuk pictures
     image = models.ImageField(upload_to='post_images')
-    # 标题
+    # caption
     caption = models.TextField()
     created_at = models.DateTimeField(default=datetime.now)
-    # 点赞数
+    # number of likes
     no_of_likes = models.IntegerField(default=0)
 
 
 class LikePost(models.Model):
-    # 文章id
+    # Article id
     post_id = models.CharField(max_length=500)
-    # 用户名
+    # user ID
     username = models.CharField(max_length=100)
 
 
 class FollowersCount(models.Model):
-    # 跟随者
+    # follower
     follower = models.CharField(max_length=100)
-    # 用户
+    # user
     user = models.CharField(max_length=100)
 
 
 class Comment(models.Model):
-    # 评论所属的帖子
+    # Posts to which the comment belongs
     post_id = models.CharField(max_length=500)
-    # 评论者用户名
+    # Commenter's username
     username = models.CharField(max_length=100)
-    # 评论内容
+    # Comments
     comment = models.TextField()
-    # 评论时间
+    # Comment time
     created_at = models.DateTimeField(default=datetime.now)
