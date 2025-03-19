@@ -103,7 +103,7 @@ def signin(request):
             return redirect('/')
         # If the user does not exist
         else:
-            messages.info(request, '登录失败')
+            messages.info(request, 'Login Failure')
             return redirect('signin')
     # If not a post request
     else:
